@@ -108,7 +108,7 @@ def test_live_mcp_client():
         print(f"  Discovered {len(tools)} tools.")
         assert len(tools) > 0, "Server-everything should return tools"
 
-        # Find echo tool and test call
+        # Find echo tool or filesystem tool and test call
         echo_tool = next((t for t in tools if t.get("name") == "echo"), None)
         if echo_tool:
             print("  Calling 'echo' tool...")
@@ -117,6 +117,11 @@ def test_live_mcp_client():
             content = res.get("content", [])
             assert any("Antigravity Test" in c.get("text", "") for c in content if c.get("type") == "text")
             print("  'echo' tool call verified successfully!")
+        elif any(t.get("name") == "list_allowed_directories" for t in tools):
+            print("  Calling 'list_allowed_directories' tool...")
+            res = client.tools.call("list_allowed_directories", {})
+            assert not res.get("isError"), f"Tool call failed: {res}"
+            print("  'list_allowed_directories' tool call verified successfully!")
 
         # Test Resources
         resources = client.resources.list()

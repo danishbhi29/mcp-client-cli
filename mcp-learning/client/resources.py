@@ -1,5 +1,6 @@
 # client/resources.py
 from typing import Any, Dict, List, Optional
+from core.protocol import MCPError
 
 
 class ResourceManager:
@@ -10,17 +11,36 @@ class ResourceManager:
     def __init__(self, client):
         self._client = client
 
+    @property
+    def is_supported(self) -> bool:
+        """Returns True if the connected server advertises resource capabilities."""
+        return "resources" in getattr(self._client, "server_capabilities", {})
+
     def list(self) -> List[Dict[str, Any]]:
         """Lists all resources available on the MCP server."""
-        response = self._client.send_request("resources/list")
-        result = response.get("result", {})
-        return result.get("resources", [])
+        if not self.is_supported:
+            return []
+        try:
+            response = self._client.send_request("resources/list")
+            result = response.get("result", {})
+            return result.get("resources", [])
+        except MCPError as e:
+            if e.code == -32601:
+                return []
+            raise
 
     def list_templates(self) -> List[Dict[str, Any]]:
         """Lists all resource templates available on the MCP server."""
-        response = self._client.send_request("resources/templates/list")
-        result = response.get("result", {})
-        return result.get("resourceTemplates", [])
+        if not self.is_supported:
+            return []
+        try:
+            response = self._client.send_request("resources/templates/list")
+            result = response.get("result", {})
+            return result.get("resourceTemplates", [])
+        except MCPError as e:
+            if e.code == -32601:
+                return []
+            raise
 
     def read(self, uri: str) -> List[Dict[str, Any]]:
         """

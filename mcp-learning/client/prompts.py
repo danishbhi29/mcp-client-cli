@@ -1,5 +1,6 @@
 # client/prompts.py
 from typing import Any, Dict, List, Optional
+from core.protocol import MCPError
 
 
 class PromptManager:
@@ -10,11 +11,23 @@ class PromptManager:
     def __init__(self, client):
         self._client = client
 
+    @property
+    def is_supported(self) -> bool:
+        """Returns True if the connected server advertises prompt capabilities."""
+        return "prompts" in getattr(self._client, "server_capabilities", {})
+
     def list(self) -> List[Dict[str, Any]]:
         """Lists all prompt templates declared by the MCP server."""
-        response = self._client.send_request("prompts/list")
-        result = response.get("result", {})
-        return result.get("prompts", [])
+        if not self.is_supported:
+            return []
+        try:
+            response = self._client.send_request("prompts/list")
+            result = response.get("result", {})
+            return result.get("prompts", [])
+        except MCPError as e:
+            if e.code == -32601:  # Method not found
+                return []
+            raise
 
     def get(self, prompt_name: str, arguments: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
         """
