@@ -1,0 +1,7 @@
+# Python Model Context Protocol (MCP) Client
+# The core client uses Python 3.10+ standard libraries (json, subprocess, os, sys, shutil, typing).
+# No external pip dependencies are strictly required to run main.py or test_suite.py.
+#
+# Optional development dependencies:
+# rich>=13.0.0
+# pytest>=7.0.0
