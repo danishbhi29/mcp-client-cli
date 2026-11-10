@@ -60,8 +60,8 @@ A lightweight, modular, and dependency-free Python client for the **Model Contex
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/<YOUR_USERNAME>/<REPO_NAME>.git
-   cd <REPO_NAME>
+   git clone https://github.com/danishbhi29/mcp-client-cli.git
+   cd mcp-client-cli
    ```
 
 2. **(Optional) Set up a virtual environment:**
